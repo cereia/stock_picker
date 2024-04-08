@@ -17,86 +17,56 @@
     #   end
     # end
 
-
 def stock_picker(array)
-  # if min val of the array is not at the end of the array, set it to buy_index
-  min_index = array.find_index(array.min)
-  max_index = array.find_index(array.max)
-
-  if min_index != array.length - 1 
-    buy_index = min_index
-  else
-    sliced = array[0...min_index]
-    sliced_buy_index = sliced.find_index(sliced.min)
-    buy_index = array.find_index(sliced[sliced_buy_index])
-  end
-
-  # if max val of the array is not at the beginning of the array, set it to sell_index
-  if max_index != 0
-    sell_index = max_index
-  else 
-    sliced = array[1..-1]
-    sliced_sell_index = sliced.find_index(sliced.max)
-    sell_index = array.find_index(sliced[sliced_sell_index])
-  end
-
-  # result = []
-  # if buy_index > sell_index
-  #   sliced = array[0...buy_index].concat(array[(buy_index + 1)..-1]) 
-  #   # p sliced
-  #   # p array
-  #   sliced_buy_index = sliced.find_index(sliced.min)
-  #   buy_index = array.find_index(sliced[sliced_buy_index])
-  #   if buy_index < sell_index
-  #     result.push(buy_index, sell_index)
-  #   else
-  #     # recursion to make sure buy_index < sell_index
-  #     stock_picker(sliced)
-  #   end
-  # # elsif buy_index == sell_index
-  # #   sliced = array[0...sell_index].concat(array[(sell_index + 1)..-1])
-  # #   sliced_sell_index = sliced.find_index(sliced.max)
-  # #   p sliced_sell_index
-  # #   sell_index = array.find_index(sliced[sliced_sell_index])
-  # #   if buy_index < sell_index
-  # #     result.push(buy_index, sell_index)
-  # #   else
-  # #     stock_picker(sliced)
-  # #   end
-  # else
-  #   result.push(buy_index, sell_index)
-  #   result
-  # end
-  # p result
+  min_index = find_min(array)
+  max_index = find_max(array)
+  p min_index
+  p max_index
   results = {}
 
-  if buy_index > sell_index 
-    sub_array1 = array[0...buy_index]
+  if min_index > max_index 
+    sub_array1 = array[0...min_index]
     p sub_array1
-    sub_array2 = array[buy_index..-1]
+    sub_array2 = array[min_index..-1]
     p sub_array2
     stock_picker(sub_array1)
     stock_picker(sub_array2)
   else
-    difference = array[sell_index] - array[buy_index]
+    difference = array[max_index] - array[min_index]
     results_key = difference.to_s
     # result = []
-    # result.push(buy_index, sell_index)
+    # result.push(min_index, max_index)
     # make the difference between the values the key and the values themselves the array
     # this makes it easier to find their indices in the original array easier 
-    results[results_key] = [array[buy_index], array[sell_index]]
+    results[results_key] = [array[min_index], array[max_index]]
     p results
   end
   # p results.keys
 
-  # p buy_index
-  # p sell_index
+  # p min_index
+  # p max_index
 
-  # p array[buy_index]
-  # p array[sell_index]
+  # p array[min_index]
+  # p array[max_index]
 end
 
-# p stock_picker([17, 3, 6, 9, 15, 8, 6, 1, 10])
+def find_min(array)
+  min_index = array.index(array.min) != array.length - 1 ? 
+    array.index(array.min) : 
+    array.index(array[0...array.index(array.min)].min)
+end
+
+def find_max(array)
+  max_index = array.index(array.max) != 0 ? 
+    array.index(array.max) : 
+    array.index(array[1..-1].max)
+end
+
+# p find_min_max([230, 72, 80, 40, 49, 70, 42, 1, 33])
+
+# TEST CASES 
+
+p stock_picker([17, 3, 6, 9, 15, 8, 6, 1, 10])
 # [1, 4] 15 - 3 = 12
 
 # stock_picker([3, 16, 8, 2, 10, 5, 12, 17, 1])
@@ -107,6 +77,6 @@ end
 
 #currently discards all the min values except 40 because they're all smaller than the max value
 
-p stock_picker([230, 72, 80, 40, 49, 70, 42, 1, 33])
+# p stock_picker([230, 72, 80, 40, 49, 70, 42, 1, 33])
 # [7, 8] 33 - 1 = 32
 # with a[1] = 72 and a[2] = 80, gets [1, 2]
