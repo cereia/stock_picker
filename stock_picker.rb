@@ -28,24 +28,20 @@ end
 
 def find_stock_pairs(array, hash)
   # find index of min and max values of the array passed in
-  min = array.index(array.min) != array.length - 1 ? 
-    array.index(array.min) : 
-    array.index(array[0...array.index(array.min)].min)
-  max = array.index(array.max) != 0 ? 
-    array.index(array.max) : 
-    array.index(array[1..-1].max)
+  # remove value if min is the last index or if max is the first index
+  index_of_min = array.index(array.min)
+  index_of_max = array.index(array.max)
+
+  min = index_of_min == array.length - 1 ? array.index(array[0...index_of_min].min) : index_of_min
+  max = index_of_max == 0 ? array.index(array[1..-1].max): index_of_max 
 
   if min > max 
     # if index of min > index of max, split the array at index of the min value and test again
-    sub_array1 = array[0...min]
-    sub_array2 = array[min..-1]
-    # recursive call to get all subarrays and collect results in single hash
-    find_stock_pairs(sub_array1, hash)
-    find_stock_pairs(sub_array2, hash)
+    find_stock_pairs(array[0...min], hash)
+    find_stock_pairs(array[min..-1], hash)
   else
-    difference = array[max] - array[min]
     # make the difference a string to be used as the key for the hash
-    hash_key = difference.to_s
+    hash_key = (array[max] - array[min]).to_s
     hash[hash_key] = [array[min], array[max]]
     hash
   end
