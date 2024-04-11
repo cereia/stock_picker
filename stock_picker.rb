@@ -8,48 +8,32 @@
 
 def stock_picker(array)
   results = {}
+  stock_days = []
   find_stock_pairs(array, results)
 
-  # sort the keys from results from largest to smallest and grab first one
-  key = results.keys.map { |value| value.to_i }.sort{ |a, b| b <=> a }[0].to_s
+  key = results.keys.map { |value| value.to_i }.max.to_s
   buy_index = array.index(results[key][0])
-  if results.length == 1 
-    # if the hash has length = 1, that means min < max, so finding the first values that match works
-    sell_index = array.index(results[key][1])
-  else
-    i = 0
-    while i < array.length do 
-      if array[i] == results[key][1] && i > buy_index
-        sell_index = i 
-        break
-      end
-      i += 1
+  stock_days.push buy_index
+  i = 0
+  while i < array.length do 
+    if array[i] == results[key][1] && i > buy_index
+      sell_index = i 
+      stock_days.push sell_index
+      break
     end
-  end 
-  [buy_index, sell_index]
-end
-
-# HELPER FUNCTIONS
-def find_min(array)
-  # set min_index to min value of the array except when the min is the last item of the array
-  min_index = array.index(array.min) != array.length - 1 ? 
-    array.index(array.min) : 
-    # use a modified array where the last item is removed and find min
-    array.index(array[0...array.index(array.min)].min)
-end
-
-def find_max(array)
-  # set max_index to max value of the array except when the max is the first item of the array
-  max_index = array.index(array.max) != 0 ? 
-    array.index(array.max) : 
-    # use a modified array where first item is removed and find max 
-    array.index(array[1..-1].max)
+    i += 1
+  end
+  stock_days
 end
 
 def find_stock_pairs(array, hash)
   # find index of min and max values of the array passed in
-  min = find_min(array)
-  max = find_max(array)
+  min = array.index(array.min) != array.length - 1 ? 
+    array.index(array.min) : 
+    array.index(array[0...array.index(array.min)].min)
+  max = array.index(array.max) != 0 ? 
+    array.index(array.max) : 
+    array.index(array[1..-1].max)
 
   if min > max 
     # if index of min > index of max, split the array at index of the min value and test again
@@ -59,7 +43,6 @@ def find_stock_pairs(array, hash)
     find_stock_pairs(sub_array1, hash)
     find_stock_pairs(sub_array2, hash)
   else
-    # when index of min < index of max, find difference of the values
     difference = array[max] - array[min]
     # make the difference a string to be used as the key for the hash
     hash_key = difference.to_s
